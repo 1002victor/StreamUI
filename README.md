@@ -1,6 +1,6 @@
 <div align="center">
   <img src="./frontend/assets/logo.svg" width="64px"/>
-  <h1>LiteNVR</h1>
+  <h1>StreamUI</h1>
 </div>
 
 ### 概述
