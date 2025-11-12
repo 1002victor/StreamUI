@@ -9,13 +9,9 @@
     <style>
       .layui-tree-iconClick .layui-icon-file::before {
         content: "\e6ed" !important;
-        /* layui-icon-video 的 Unicode */
         color: #23292e;
-        /* 可选：设置颜色 */
         font-size: 16px;
-        /* 可选：调整大小 */
         margin-right: 0;
-        /* 可选：微调间距 */
       }
 
       #ID_videowall_container.layout-1 {
@@ -50,7 +46,6 @@
         width: 100%;
         height: 100%;
         background-color: #2f363c;
-        object-fit: cover;
         border: 1px solid #e7e7e7;
         box-sizing: border-box;
       }
@@ -133,11 +128,8 @@
         // 屏幕单元抽象
         function VideoCell(container, index) {
           this.container = container; //  挂载到 ID_videowall_container
-
           this.index = index; // 分屏索引
-
           this.element = null;
-          this.player = null; // WebRTC 连接实例
 
           this.init();
         }
@@ -156,38 +148,28 @@
           // 将创建的 DOM 添加到父容器
           this.container.appendChild(this.element);
 
-          this.bindEvents();
-        };
-
-        VideoCell.prototype.bindEvents = function () {
-          // 配置按钮: 打开树形选择弹层
+          // 配置按钮: 打开流ID树
           let configBtn = this.element.querySelector(".config-btn");
           configBtn.addEventListener("click", () => this.openLayer());
-          // 重置按钮: 关闭 webrtc 连接并停止播放
+
+          // 重置按钮: 关闭fmp4连接并停止播放
           let resetBtn = this.element.querySelector(".reset-btn");
           resetBtn.addEventListener("click", () => this.stopPlay());
 
-          // 播放状态
-          let video = this.element.querySelector("video");
+          // 添加状态监听
+          let playerEl = this.element.querySelector("video");
           let statusEl = this.element.querySelector(".video-status");
-
-          // 显示 Loading...
           function showLoading() {
             statusEl.textContent = "Loading...";
             statusEl.style.display = "flex";
           }
-
-          // 隐藏状态
           function hideStatus() {
             statusEl.style.display = "none";
           }
-
-          // 播放开始加载时，显示 loading
-          video.addEventListener("loadstart", showLoading);
-          video.addEventListener("waiting", showLoading);
-          // 真正开始播放，隐藏状态
-          video.addEventListener("playing", hideStatus);
-          video.addEventListener("canplay", hideStatus);
+          playerEl.addEventListener("loadstart", showLoading);
+          playerEl.addEventListener("waiting", showLoading);
+          playerEl.addEventListener("playing", hideStatus);
+          playerEl.addEventListener("canplay", hideStatus);
         };
 
         VideoCell.prototype.openLayer = function () {
@@ -195,12 +177,12 @@
 
           layer.open({
             type: 1,
-            title: "流ID树（RTSP）",
+            title: "流ID树",
             area: ["300px", "324px"],
             content: $("#ID_tpl_layer").html(),
             success: function (layero, index) {
               $.ajax({
-                url: "/api/stream/streamid-list?schema=rtsp",
+                url: "/api/stream/streamid-list?schema=fmp4",
                 method: "GET",
                 success: function (res) {
                   if (res.code === 0) {
@@ -232,7 +214,7 @@
                     }
 
                     let treeData = toTreeData(res.data);
-                    console.log(treeData);
+                    // console.log(treeData);
 
                     // 渲染树
                     tree.render({
@@ -243,57 +225,22 @@
                           // console.log(`播放 ${obj.data.channelInfo.app} 的 ${obj.data.channelInfo.stream} 流`);
 
                           self.stopPlay();
-                          self.player = new ZLMRTCClient.Endpoint({
-                            element: self.element.querySelector("video"),
-                            debug: true,
-                            zlmsdpUrl: `/index/api/webrtc?app=${obj.data.channelInfo.app}&stream=${obj.data.channelInfo.stream}&type=play`,
-                            recvOnly: true,
-                            videoEnable: true, // 启用视频
-                            audioEnable: false, // 启用音频
-                            simulcast: false, // 启用多流编码
-                            usedatachannel: false,
+
+                          let playerEl = self.element.querySelector("video");
+                          let statusEl =
+                            self.element.querySelector(".video-status");
+
+                          // 播放流
+                          playerEl.src = `http://${window.location.hostname}:8080/${obj.data.channelInfo.app}/${obj.data.channelInfo.stream}.live.mp4`;
+                          playerEl.load();
+
+                          playerEl.play().catch((e) => {
+                            if (statusEl) {
+                              statusEl.textContent =
+                                "播放失败，请检查流是否存在";
+                              statusEl.style.display = "flex";
+                            }
                           });
-
-                          self.player.on(
-                            ZLMRTCClient.Events.WEBRTC_ON_REMOTE_STREAMS,
-                            (stream) => {
-                              layer.msg("✅ WebRTC 播放成功", {
-                                time: 1500,
-                                offset: "t",
-                                shift: 1,
-                              });
-                            }
-                          );
-                          self.player.on(
-                            ZLMRTCClient.Events
-                              .WEBRTC_OFFER_ANWSER_EXCHANGE_FAILED,
-                            (e) => {
-                              // layer.msg("❌ OFFER ANWSER 交换失败", {
-                              //     time: 1500,
-                              //     offset: "t",
-                              //     shift: 1,
-                              // });
-                              console.log("❌ OFFER ANWSER 交换失败", e);
-                              self.player.close();
-                              self.player = null;
-                              self.video.srcObject = null;
-                              self.video.load();
-                            }
-                          );
-
-                          self.player.on(
-                            ZLMRTCClient.Events.WEBRTC_ICE_CANDIDATE_ERROR,
-                            (e) => {
-                              console.log("❌ ICE 错误", e);
-                            }
-                          );
-                          self.player.on(
-                            ZLMRTCClient.Events
-                              .WEBRTC_ON_CONNECTION_STATE_CHANGE,
-                            (state) => {
-                              console.log("🔗 RTC 状态:", state);
-                            }
-                          );
 
                           layer.close(index);
                         }
@@ -307,16 +254,17 @@
         };
 
         VideoCell.prototype.stopPlay = function () {
-          if (this.player) {
-            this.player.close();
-            this.player = null;
+          let playerEl = this.element.querySelector("video");
+          let statusEl = this.element.querySelector(".video-status");
+          if (playerEl) {
+            playerEl.pause();
+            playerEl.src = "";
+            playerEl.load();
           }
-          let video = this.element.querySelector("video");
-          if (video) {
-            video.srcObject = null;
-            video.load();
+          if (statusEl) {
+            statusEl.style.display = "none";
           }
-          console.log(`[屏幕${this.index}] 播放已停止`);
+          console.log(`[屏幕 ${this.index} 已重置]`);
         };
 
         window.destroyVideoCells = function () {
