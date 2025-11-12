@@ -1,6 +1,14 @@
 <div align="center">
   <img src="./frontend/assets/logo.svg" width="64px"/>
   <h1>StreamUI</h1>
+  <a>
+    <img src="https://travis-ci.org/xia-chu/ZLMediaKit.svg?branch=master">
+    <img src="https://img.shields.io/badge/language-python-EE4C2C.svg">
+    <img src="https://img.shields.io/badge/license-MIT-green.svg">
+    <img src="https://img.shields.io/badge/platform-linux%20|%20macos%20|%20windows-blue.svg">
+    <img src="https://img.shields.io/badge/PRs-welcome-yellow.svg">
+  </a>
+
 </div>
 
 ### 概述
@@ -19,7 +27,7 @@
 
 - 支持多屏播放
 
-- 支持流本地录制、回放、下载、自动清理，支持流事件录制
+- 支持流本地录制、回放、下载、自动清理，支持事件录制（事件发生前 n 秒+事件发生后 n 秒）
 
 - 支持 GB28181 接入/级联（coming soon ...）
 
@@ -50,7 +58,7 @@ docker compose restart
 
 - 考虑增大 GOP 缓存，优点是播放平滑，录制事件视频回溯时间变长，缺点是增大内存占用
 
-- 更多选项深入研究请参考 zlmediakit 的 [配置说明](https://github.com/ZLMediaKit/ZLMediaKit/tree/master/conf)
+- 更多选项深入研究请参考 ZLMediaKit 的 [配置说明](https://github.com/ZLMediaKit/ZLMediaKit/tree/master/conf)
 
 ### 效果图
 
