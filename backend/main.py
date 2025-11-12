@@ -1,27 +1,27 @@
 import os
+import re
 import shutil
 from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
-import re
+
 import httpx
 import psutil
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
-from scheduler import cleanup_old_videos
-from utils import get_video_shanghai_time, get_zlm_secret
-
 
 from onvif.api import router as onvif_router
+from scheduler import cleanup_old_videos
+from utils import get_video_shanghai_time, get_zlm_secret
 
 # =========================================================
 # zlmediakit 地址
 ZLM_SERVER = "http://127.0.0.1:8080"
 # zlmediakit 密钥
 ZLM_SECRET = get_zlm_secret("/opt/media/conf/config.ini")
-# zlmediakit 录像
+# zlmediakit 录像回放
 RECORD_ROOT = Path("/opt/media/bin/www/record")
 # 录像最大切片数
 KEEP_VIDEOS = 72
@@ -126,12 +126,12 @@ async def get_threads_load():
 @app.get(
     "/api/perf/host-stats",
     tags=["性能"],
-    summary="获取当前系统资源使用率（CPU、内存、磁盘、网络）",
+    summary="获取当前系统资源使用率",
 )
-async def get_system_stats():
+async def get_host_stats():
     timestamp = datetime.now().strftime("%H:%M:%S")
 
-    # CPU 使用率（非阻塞）
+    # CPU 使用率
     cpu_percent = psutil.cpu_percent(interval=None)
 
     # 内存
@@ -329,8 +329,7 @@ async def delete_streamid(
 
 
 # =============================================================================
-# playback
-@app.get("/api/record/start-record", tags=["录制"], summary="开启录制")
+@app.get("/api/playback/start-record", tags=["录制"], summary="开启录制")
 async def get_start_record(
     vhost: str = Query("__defaultVhost__", description="虚拟主机"),
     app: str = Query(..., description="应用名"),
@@ -364,7 +363,7 @@ async def get_start_record(
     return response.json()
 
 
-@app.get("/api/record/stop-record", tags=["录制"], summary="停止录制")
+@app.get("/api/playback/stop-record", tags=["录制"], summary="停止录制")
 async def get_stop_record(
     vhost: str = Query("__defaultVhost__", description="虚拟主机"),
     app: str = Query(..., description="应用名"),
@@ -382,12 +381,12 @@ async def get_stop_record(
     return response.json()
 
 
-@app.get("/api/record/event-record", tags=["录制"], summary="开启事件视频录制")
+@app.get("/api/playback/event-record", tags=["录制"], summary="开启事件视频录制")
 async def get_event_record(
     vhost: str = Query("__defaultVhost__", description="虚拟主机"),
     app: str = Query(..., description="应用名"),
     stream: str = Query(..., description="流ID"),
-    path: str = Query(..., description="录像保存相对路径"),
+    path: str = Query(..., description="录像保存相对路径，如 person/test.mp4"),
     back_ms: str = Query(..., description="回溯录制时长"),
     forward_ms: str = Query(..., description="后续录制时长"),
 ):
@@ -406,11 +405,11 @@ async def get_event_record(
 
 
 @app.get(
-    "/api/record/videos-list",
+    "/api/playback/streamid-record-list",
     tags=["录制"],
     summary="获取本地所有流ID的录制信息",
 )
-async def get_videos_list():
+async def get_streamid_record_list():
     result = []
 
     if not RECORD_ROOT.exists() or not RECORD_ROOT.is_dir():
@@ -500,8 +499,10 @@ async def get_videos_list():
         return {"code": -1, "msg": f"目录遍历异常 {e}"}
 
 
-@app.get("/api/record/videos", tags=["录制"], summary="获取指定流ID的全部录制信息")
-async def get_videos(
+@app.get(
+    "/api/playback/streamid-record", tags=["录制"], summary="获取指定流ID的全部录制信息"
+)
+async def get_streamid_record(
     app: str = Query(..., description="应用名"),
     stream: str = Query(..., description="流ID"),
     date: str = Query(..., description="日期格式 YYYY-MM-DD"),
@@ -536,8 +537,10 @@ async def get_videos(
     return {"code": 0, "data": results}
 
 
-@app.delete("/api/record/videos", tags=["录制"], summary="删除指定流ID的全部录制文件")
-async def delete_videos(
+@app.delete(
+    "/api/playback/streamid-record", tags=["录制"], summary="删除指定流ID的全部录制文件"
+)
+async def delete_streamid_record(
     app: str = Query(..., description="应用名"),
     stream: str = Query(..., description="流ID"),
 ):
