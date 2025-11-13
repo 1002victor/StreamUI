@@ -157,19 +157,20 @@
           resetBtn.addEventListener("click", () => this.stopPlay());
 
           // 添加状态监听
-          let playerEl = this.element.querySelector("video");
-          let statusEl = this.element.querySelector(".video-status");
-          function showLoading() {
-            statusEl.textContent = "Loading...";
-            statusEl.style.display = "flex";
-          }
-          function hideStatus() {
-            statusEl.style.display = "none";
-          }
-          playerEl.addEventListener("loadstart", showLoading);
-          playerEl.addEventListener("waiting", showLoading);
-          playerEl.addEventListener("playing", hideStatus);
-          playerEl.addEventListener("canplay", hideStatus);
+          // let playerEl = this.element.querySelector("video");
+          // let statusEl = this.element.querySelector(".video-status");
+
+          // function showLoading() {
+          //   statusEl.textContent = "Loading...";
+          //   statusEl.style.display = "flex";
+          // }
+          // function hideStatus() {
+          //   statusEl.style.display = "none";
+          // }
+          // playerEl.addEventListener("loadstart", showLoading);
+          // playerEl.addEventListener("waiting", showLoading);
+          // playerEl.addEventListener("playing", hideStatus);
+          // playerEl.addEventListener("canplay", hideStatus);
         };
 
         VideoCell.prototype.openLayer = function () {
@@ -224,6 +225,15 @@
                         if (obj.data.channelInfo) {
                           // console.log(`播放 ${obj.data.channelInfo.app} 的 ${obj.data.channelInfo.stream} 流`);
 
+                          layer.msg(
+                            `⏳ 正在连接 ${obj.data.channelInfo.app}/${obj.data.channelInfo.stream} ...`,
+                            {
+                              time: 1500,
+                              offset: "t",
+                              shift: 1,
+                            }
+                          );
+
                           self.stopPlay();
 
                           let playerEl = self.element.querySelector("video");
@@ -234,13 +244,13 @@
                           playerEl.src = `http://${window.location.hostname}:8080/${obj.data.channelInfo.app}/${obj.data.channelInfo.stream}.live.mp4`;
                           playerEl.load();
 
-                          playerEl.play().catch((e) => {
-                            if (statusEl) {
-                              statusEl.textContent =
-                                "播放失败，请检查流是否存在";
-                              statusEl.style.display = "flex";
-                            }
-                          });
+                          // playerEl.play().catch((e) => {
+                          //   if (statusEl) {
+                          //     statusEl.textContent =
+                          //       "播放失败，请检查流是否存在";
+                          //     statusEl.style.display = "flex";
+                          //   }
+                          // });
 
                           layer.close(index);
                         }
@@ -255,16 +265,12 @@
 
         VideoCell.prototype.stopPlay = function () {
           let playerEl = this.element.querySelector("video");
-          let statusEl = this.element.querySelector(".video-status");
+
           if (playerEl) {
             playerEl.pause();
             playerEl.src = "";
             playerEl.load();
           }
-          if (statusEl) {
-            statusEl.style.display = "none";
-          }
-          console.log(`[屏幕 ${this.index} 已重置]`);
         };
 
         window.destroyVideoCells = function () {
