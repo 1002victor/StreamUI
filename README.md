@@ -1,6 +1,13 @@
 <div align="center">
   <img src="./frontend/assets/logo.svg" width="56px"/>
   <h1>StreamUI</h1>
+  <a>
+    <img src="https://travis-ci.org/xia-chu/ZLMediaKit.svg?branch=master">
+    <img src="https://img.shields.io/badge/language-python-EE4C2C.svg">
+    <img src="https://img.shields.io/badge/license-MIT-green.svg">
+    <img src="https://img.shields.io/badge/platform-linux%20|%20macos%20|%20windows-blue.svg">
+    <img src="https://img.shields.io/badge/PRs-welcome-yellow.svg">
+  </a>
 </div>
 
 ## Overview
