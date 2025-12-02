@@ -1,16 +1,9 @@
 <div align="center">
   <img src="./frontend/assets/logo.svg" width="56px"/>
   <h1>StreamUI</h1>
-  <a>
-    <img src="https://travis-ci.org/xia-chu/ZLMediaKit.svg?branch=master">
-    <img src="https://img.shields.io/badge/language-python-EE4C2C.svg">
-    <img src="https://img.shields.io/badge/license-MIT-green.svg">
-    <img src="https://img.shields.io/badge/platform-linux%20|%20macos%20|%20windows-blue.svg">
-    <img src="https://img.shields.io/badge/PRs-welcome-yellow.svg">
-  </a>
 </div>
 
-## Overview
+### Overview
 
 🚀 A minimal and lightweight video streaming management platform
 
@@ -19,7 +12,7 @@
 > StreamUI 中 Stream 取自 [ZLMediaKit](https://github.com/ZLMediaKit/ZLMediaKit) 流概念，UI 取自 [Layui](https://github.com/layui/layui)。整体设计以蓝绿色（`#16baaa`）为主色调，秉持 “简洁、易用、可扩展” 的理念，在代码复杂度与功能实现之间不断权衡取舍，执着追求极简之美。
 
 
-## Supported Features
+### Supported Features
 
 - Supports ingest and egress via mainstream streaming protocols, including RTSP, RTMP, HLS, WebRTC, RTP, and GB28181
 
@@ -48,7 +41,7 @@
 
 - 🚧 支持 GB28181 接入/级联（正在实现中 ...）
 
-## Quick Start
+### Quick Start
 
 This project is best deployed using Docker Compose.
 
@@ -66,7 +59,7 @@ If you change the settings and want the changes to take effect, just restart the
 ```bash
 docker compose restart
 ```
-## Tips
+### Tips
 
 After the first startup, it's recommended to adjust the settings according to your business needs before restarting for regular use:
 
@@ -92,13 +85,13 @@ After the first startup, it's recommended to adjust the settings according to yo
 更多选项深入研究请参考 ZLMediaKit 的 [配置说明](https://github.com/ZLMediaKit/ZLMediaKit/tree/master/conf)
 
 
-## Snapshots
+### Snapshots
 
 <img src="./snapshots/login.png" alt="wall" style="zoom:33%;" />
 
 <img src="./snapshots/home.png" alt="home" style="zoom: 33%;" />
 
-## Repo Structure
+### Repo Structure
 
 StreamUI keeps it simple—using lightweight Layui (front-end) and FastAPI (back-end) instead of heavy frameworks like Vue, React, or Spring. Easy to understand and modify.
 
@@ -126,7 +119,7 @@ StreamUI 追求极简实现，前端未采用 Vue、React 等重量级框架，�
 │       └── wall.html  # 分屏展示
 ```
 
-## Thanks
+### Thanks
 
 - [ZLMediaKit](https://github.com/ZLMediaKit/ZLMediaKit)
 - [Layui](https://github.com/layui/layui)
@@ -134,6 +127,6 @@ StreamUI 追求极简实现，前端未采用 Vue、React 等重量级框架，�
 
 🤗 ZLMediaKit https://github.com/ZLMediaKit/ZLMediaKit has included this project
 
-## License
+### License
 
 StreamUI is licensed under the [MIT License](./LICENSE)
