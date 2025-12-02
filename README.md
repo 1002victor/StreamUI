@@ -108,10 +108,7 @@ StreamUI 追求极简实现，前端未采用 Vue、React 等重量级框架，�
 ```bash
 ├── backend
 │   ├── main.py  # 主程序入口
-│   ├── onvif  # ONVIF 设备识别
-│   │   ├── api.py
-│   │   ├── client.py
-│   │   └── wsdl
+│   ├── onvif  # ONVIF 设备识别与云台控制
 │   ├── scheduler.py  # 定时任务
 │   └── utils.py  # 工具函数  
 │
