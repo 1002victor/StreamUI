@@ -7,11 +7,6 @@ WSDL_DIR = "./onvif/wsdl"
 router = APIRouter()
 
 
-@router.get("/api/onvif/scan", summary="扫描 ONVIF 设备", tags=["ONVIF"])
-async def get_scan():
-    pass
-
-
 @router.get(
     "/api/onvif/profiles", summary="获取 ONVIF 配置（含 PTZ 信息）", tags=["ONVIF"]
 )

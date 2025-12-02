@@ -16,7 +16,7 @@
 
 - Supports ingest and egress via mainstream streaming protocols, including RTSP, RTMP, HLS, WebRTC, RTP, and GB28181
 
-- Supports ONVIF device discovery and PTZ (pan-tilt-zoom) control。
+- Supports ONVIF device discovery
 
 - Supports stream distribution over multiple protocols: RTSP, WebRTC, RTMP, FLV, HLS, HLS-fMP4, HTTP-TS, and HTTP-fMP4
 
@@ -31,7 +31,7 @@
 
 - 支持 RTSP/RTMP/HLS/WebRTC/RTP/GB28181 等主流协议的拉流推流接入
 
-- 支持 ONVIF 设备识别，云台控制
+- 支持 ONVIF 设备识别
 
 - 支持分发 RTSP/WebRTC/RTMP/FLV/HLS/HLS-fMP4/HTTP-TS/HTTP-fMP4 等协议
 
