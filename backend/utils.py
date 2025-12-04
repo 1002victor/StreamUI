@@ -4,7 +4,7 @@ import subprocess
 from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
-
+import mk_logger
 TZ_SHANGHAI = ZoneInfo("Asia/Shanghai")
 
 
@@ -23,7 +23,7 @@ def parse_timestamp_to_shanghai(time_str: str) -> datetime | None:
             dt = dt.replace(tzinfo=TZ_SHANGHAI)
         return dt.astimezone(TZ_SHANGHAI)
     except Exception as e:
-        print(f"❌ 时间解析失败: {e}")
+        mk_logger.log_error(f"❌ 时间解析失败: {e}")
         return None
 
 
@@ -44,7 +44,7 @@ def get_video_shanghai_time(video_path: Path) -> dict | None:
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
         if result.returncode != 0:
-            print(f"❌ ffprobe 失败: {video_path}")
+            mk_logger.log_error(f"❌ ffprobe 失败: {video_path}")
             return None
 
         info = json.loads(result.stdout)
@@ -55,7 +55,7 @@ def get_video_shanghai_time(video_path: Path) -> dict | None:
         creation_time_str = tags.get("creation_time")
         start_sh = parse_timestamp_to_shanghai(creation_time_str)
         if not start_sh:
-            print(f"⚠️ 无效 creation_time: {video_path}")
+            mk_logger.log_warn(f"⚠️ 无效 creation_time: {video_path}")
             return None
 
         # 2. 获取视频时长
@@ -76,7 +76,7 @@ def get_video_shanghai_time(video_path: Path) -> dict | None:
             "end": end_sh.isoformat(),
         }
     except Exception as e:
-        print(f"❌ 处理失败 {video_path}: {e}")
+        mk_logger.log_error(f"❌ 处理失败 {video_path}: {e}")
         return None
 
 

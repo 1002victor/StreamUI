@@ -2,6 +2,7 @@ import os
 import re
 import shutil
 import mk_loader
+import mk_logger
 from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
@@ -23,7 +24,8 @@ ZLM_SERVER = "http://127.0.0.1:" + mk_loader.get_config('http.port')
 # zlmediakit 密钥
 ZLM_SECRET = mk_loader.get_config('api.secret')
 # zlmediakit 录像回放
-RECORD_ROOT = Path(mk_loader.get_config('protocol.mp4_save_path'))
+RECORD_ROOT = Path(mk_loader.get_config('protocol.mp4_save_path'),mk_loader.get_config('record.appName'))
+mk_logger.log_info(RECORD_ROOT)
 # 录像最大切片数
 KEEP_VIDEOS = 72
 # =========================================================
@@ -45,12 +47,12 @@ async def lifespan(app: FastAPI):
 
     # 只有在这里，事件循环已经启动，可以安全 start
     scheduler.start()
-    print("[Scheduler] 🚀 定时任务已启动")
+    mk_logger.log_info("[Scheduler] 🚀 定时任务已启动")
 
     yield
 
     scheduler.shutdown()
-    print("[Scheduler] 🛑 定时任务已取消")
+    mk_logger.log_warn("[Scheduler] 🛑 定时任务已取消")
 
 
 t = """
@@ -412,7 +414,7 @@ async def get_event_record(
 )
 async def get_streamid_record_list():
     result = []
-
+    mk_logger.log_info(RECORD_ROOT)
     if not RECORD_ROOT.exists() or not RECORD_ROOT.is_dir():
         return {"code": -1, "msg": f"{RECORD_ROOT} 目录不存在或不是目录"}
 
@@ -460,9 +462,9 @@ async def get_streamid_record_list():
                         # 空目录：删除
                         try:
                             shutil.rmtree(item_path)
-                            print(f"已删除空录像目录: {item_path}")
+                            mk_logger.log_info(f"已删除空录像目录: {item_path}")
                         except Exception as e:
-                            print(f"删除空目录失败 {item_path}: {e}")
+                            mk_logger.log_error(f"删除空目录失败 {item_path}: {e}")
                         continue
 
                     # 统计文件数量和大小
@@ -475,7 +477,7 @@ async def get_streamid_record_list():
                             total_size_bytes += size
                             total_slices += 1
                         except OSError as e:
-                            print(f"读取文件大小失败 {file_path}: {e}")
+                            mk_logger.log_error(f"读取文件大小失败 {file_path}: {e}")
 
                     # 添加有效日期
                     dates.add(item)
@@ -527,7 +529,7 @@ async def get_streamid_record(
                     rel_path = file_path.relative_to(RECORD_ROOT)
                     data["filename"] = str(rel_path)
                 except ValueError:
-                    print(f"⚠️ 文件不在 RECORD_ROOT 下，跳过: {file_path}")
+                    mk_logger.log_error(f"⚠️ 文件不在 RECORD_ROOT 下，跳过: {file_path}")
                     continue
 
                 results.append(data)

@@ -2,7 +2,7 @@ import os
 import re
 from datetime import datetime
 from pathlib import Path
-
+import mk_logger
 
 def parse_filename_time(filename: str) -> datetime:
     """
@@ -25,16 +25,16 @@ def cleanup_old_videos(path: Path, keep_videos: int):
     """
     扫描 path 下所有 app/stream，保留最新的 keep_videos 个 .mp4 文件，删除旧的
     """
-    print(
+    mk_logger.log_info(
         f"[Scheduler {datetime.now()}] 开始扫描 {path} 下所有 app/stream 的视频片段..."
     )
 
     if not path.exists():
-        print(f"[Scheduler Error] ❌ 录像根目录不存在: {path}")
+        mk_logger.log_error(f"[Scheduler Error] ❌ 录像根目录不存在: {path}")
         return
 
     if not path.is_dir():
-        print(f"[Scheduler Error] ❌ 路径不是目录: {path}")
+        mk_logger.log_error(f"[Scheduler Error] ❌ 路径不是目录: {path}")
         return
 
     total_deleted = 0  # 统计总共删除的文件数
@@ -83,14 +83,14 @@ def cleanup_old_videos(path: Path, keep_videos: int):
                     try:
                         file_path.unlink()
                         relative_path = file_path.relative_to(path)
-                        print(
+                        mk_logger.log_info(
                             f"[Scheduler {datetime.now()}] 🗑️ 删除旧片段: {relative_path}"
                         )
                         total_deleted += 1
 
                     except Exception as e:
-                        print(f"[Scheduler Error] ❌ 删除失败 {file_path}: {e}")
+                        mk_logger.log_error(f"[Scheduler Error] ❌ 删除失败 {file_path}: {e}")
 
-    print(
+    mk_logger.log_info(
         f"[Scheduler {datetime.now()}] ✅ 扫描与清理完成，共删除 {total_deleted} 个旧视频片段。"
     )

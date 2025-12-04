@@ -432,7 +432,7 @@
                     statusElement.style.display = "flex";
                   }
                 } else {
-                  playerElement.src = `http://${window.location.hostname}:8080/${data.app}/${data.stream}.live.mp4`;
+                  playerElement.src = `${window.location.origin}/${data.app}/${data.stream}.live.mp4`;
                   playerElement.load();
 
                   playerElement.play().catch((e) => {
@@ -457,23 +457,23 @@
                   },
                   hls: {
                     name: "HLS",
-                    port: 8080,
-                    url: `http://${window.location.hostname}:8080/${data.app}/${data.stream}/hls.m3u8`,
+                    port: window.location.port,
+                    url: `${window.location.origin}/${data.app}/${data.stream}/hls.m3u8`,
                   },
                   "hls.fmp4": {
                     name: "HLS-fMP4",
-                    port: 8080,
-                    url: `http://${window.location.hostname}:8080/${data.app}/${data.stream}/hls.fmp4.m3u8`,
+                    port: window.location.port,
+                    url: `${window.location.origin}/${data.app}/${data.stream}/hls.fmp4.m3u8`,
                   },
                   ts: {
                     name: "HTTP-TS",
-                    port: 8080,
-                    url: `http://${window.location.hostname}:8080/${data.app}/${data.stream}.live.ts`,
+                    port: window.location.port,
+                    url: `${window.location.origin}/${data.app}/${data.stream}.live.ts`,
                   },
                   fmp4: {
                     name: "HTTP-fMP4",
-                    port: 8080,
-                    url: `http://${window.location.hostname}:8080/${data.app}/${data.stream}.live.mp4`,
+                    port: window.location.port,
+                    url: `${window.location.origin}/${data.app}/${data.stream}.live.mp4`,
                   },
                 };
 
